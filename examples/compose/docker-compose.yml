@@ -1,0 +1,31 @@
+version: '2.1'
+
+services:
+
+  minio:
+    image: autopilotpattern/minio-manta:${TAG:-latest}
+    restart: always
+    mem_limit: 1g
+    links:
+      - consul:consul
+    env_file: _env
+    ports:
+      - 9000
+    environment:
+      - CONSUL_AGENT=true
+      - CONSUL=consul
+      - LOG_LEVEL=info
+    command: >
+      /usr/bin/containerpilot
+
+  consul:
+    image: autopilotpattern/consul:1.0.0r43
+    restart: always
+    mem_limit: 128m
+    ports:
+      - 8500
+    environment:
+      - CONSUL=consul
+      - LOG_LEVEL=info
+    command: >
+      /usr/local/bin/containerpilot

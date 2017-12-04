@@ -1,0 +1,57 @@
+#!/bin/bash
+set -eo pipefail
+
+#
+# Translate our environment's Manta key into a proper PEM format and store at a
+# known location for Minio.
+#
+preStart() {
+    if [ ! -z "${MINIO_KEY_MATERIAL}" ]; then
+        _log "Translate newlines within Manta key material"
+        echo "${MINIO_KEY_MATERIAL}" | tr '#' '\n' >> $MANTA_KEY_MATERIAL
+    fi
+    if [ ! -f "${MANTA_KEY_MATERIAL}" ]; then
+        _log "Couldn't locate ${MANTA_KEY_MATERIAL}"
+        exit 1
+    fi
+    chmod 0400 $MANTA_KEY_MATERIAL
+}
+
+start() {
+    if [ ! -f "${MANTA_KEY_MATERIAL}" ]; then
+        _log "couldn't find manta key"
+        exit 3
+    fi
+    /usr/bin/minio gateway manta
+}
+
+# ---------------------------------------------------
+# helpers and parse arguments
+
+_log() {
+    echo "    $(date -u '+%Y-%m-%d %H:%M:%S') containerpilot: $@"
+}
+
+# Get function list
+funcs=($(declare -F -p | cut -d " " -f 3))
+
+until
+    if [ ! -z "$1" ]; then
+        # check if the first arg is a function in this file, or use a default
+        if [[ " ${funcs[@]} " =~ " $1 " ]]; then
+            cmd=$1
+            shift 1
+        fi
+
+        $cmd "$@"
+        if [ $? == 127 ]; then
+            help
+        fi
+
+        exit
+    else
+        start
+    fi
+do
+    echo
+done

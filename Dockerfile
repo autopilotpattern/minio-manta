@@ -16,7 +16,8 @@ RUN export CONSUL_CHECKSUM=585782e1fb25a2096e1776e2da206866b1d9e1f10b71317e682e0
     && cd /usr/bin \
     && unzip /tmp/${archive} \
     && chmod +x /usr/bin/consul \
-    && rm /tmp/${archive}
+    && rm /tmp/${archive} \
+    && mkdir -p /data/consul /etc/consul
 
 # Add Containerpilot and set its configuration
 ENV CONTAINERPILOT_VER=3.6.0
@@ -36,9 +37,11 @@ RUN export MINIO_CHECKSUM=130e3566e182fb8015806d89f9552f608f6fc725ae80eff6c3e447
          "${MINIO_DIST}/minio-manta-${MINIO_COMMIT}-linux.tar.gz" \
     && tar zxf /tmp/minio.tar.gz -C /usr/bin \
     && echo "${MINIO_CHECKSUM}  /usr/bin/minio" | sha256sum -c \
-    && rm /tmp/minio.tar.gz
+    && rm /tmp/minio.tar.gz \
+    && mkdir -p /etc/minio
 
 COPY etc/containerpilot.json5 etc/
+COPY bin/minio-manage /usr/bin/
 
 VOLUME ["/data"]
 

@@ -1,0 +1,37 @@
+version: '2.1'
+
+services:
+
+  minio:
+    image: autopilotpattern/minio-manta:${TAG:-latest}
+    labels:
+      - triton.cns.services=minio
+      - service=minio
+      - role=storage
+    restart: always
+    mem_limit: 1g
+    env_file:
+      - _env
+      - _consul_env
+    environment:
+      - CONSUL_AGENT=true
+      - LOG_LEVEL=info
+    network_mode: bridge
+    command: >
+      /usr/bin/containerpilot
+
+  consul:
+    image: autopilotpattern/consul:1.0.0r43
+    labels:
+      - triton.cns.services=consul
+      - service=consul
+      - role=registry
+    restart: always
+    mem_limit: 1g
+    env_file:
+      - _consul_env
+    network_mode: bridge
+    dns:
+      - 127.0.0.1
+    command: >
+      /usr/local/bin/containerpilot

@@ -30,16 +30,21 @@ build/tester:
 
 ## Tag built containers as latest
 tag:
-	docker tag $(testImage):$(tag) $(testImage):latest
 	docker tag $(image):$(tag) $(image):latest
+
+tag/all: tag # tag/tester
+
+## Tag the test running container
+tag/tester:
+	docker tag $(testImage):$(tag) $(testImage):latest
 
 ## Push the current application container images to the Docker Hub
 push:
 	docker push $(image):$(tag)
-	docker push $(testImage):$(tag)
+	# docker push $(testImage):$(tag)
 
 ## Tag the current images as 'latest' and push them to the Docker Hub
-ship: tag
+ship: tag/all
 	docker push $(image):$(tag)
 	docker push $(image):latest
 
