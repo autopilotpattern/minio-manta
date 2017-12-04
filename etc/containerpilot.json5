@@ -1,0 +1,46 @@
+{
+  consul: '{{ if .CONSUL_AGENT }}localhost{{ else }}{{ .CONSUL | default "consul"}}{{ end }}:8500',
+  logging: {
+    level: '{{ .LOG_LEVEL | default "INFO" }}'
+  },
+  jobs: [
+    {
+      name: "minio-manta",
+      port: 9000,
+      interfaces: ["inet"],
+      restarts: "unlimited",
+      exec: [
+        "/usr/bin/minio", "gateway", "manta"
+      ],
+      {{ if .CONSUL_AGENT }}
+      when: {
+        source: "consul-agent",
+        once: "healthy",
+      },
+      {{ end }}
+      health: {
+        exec: "curl -so /dev/null http://localhost:9000",
+        interval: 10,
+        ttl: 25,
+      }
+    },{{ if .CONSUL_AGENT }}{
+      name: "consul-agent",
+      restarts: "unlimited",
+      exec: [
+        "/usr/bin/consul", "agent",
+            "-data-dir=/data/consul",
+            "-config-dir=/etc/consul",
+            "-log-level=err",
+            "-rejoin",
+            "-retry-join", '{{ .CONSUL | default "consul" }}',
+            "-retry-max", "10",
+            "-retry-interval", "10s",
+      ],
+      health: {
+        exec: "curl -so /dev/null http://localhost:8500",
+        interval: 10,
+        ttl: 25,
+      }
+    }{{ end }}
+  ],
+}
