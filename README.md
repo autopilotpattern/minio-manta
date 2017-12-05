@@ -6,13 +6,26 @@ This currently requires a custom Minio [build package](https://us-east.manta.joy
 
 ## Build
 
+### compose
+
 ```sh
 $ make build
 $ make tag
 $ cd examples/compose
 $ vim _env
-$ docker-compose up
+$ docker-compose up -d --scale consul=3
 ```
+
+### triton
+
+```sh
+$ cd examples/triton
+$ vim _env
+$ vim _consul_env
+$ docker-compose up -d --scale consul=3
+```
+
+Follow the instructions on how to [setup the `mc` client](https://github.com/minio/mc#add-a-cloud-storage-service) using your Manta credentials.
 
 ## Environment
 
