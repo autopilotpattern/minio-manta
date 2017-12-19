@@ -35,6 +35,7 @@ You need to pass in the following env vars, which include a private key :(
 - `MINIO_SECRET_KEY` is your `MANTA_KEY_ID` and passed to Minio.
 - `MINIO_KEY_MATERIAL` is the private key attached to your Triton account that you use to connect Minio to Manta. This is used to generate a key file in the file system.
 - `MANTA_KEY_MATERIAL` is the location inside the container where the Manta key will be stored. This is passed directly to Minio. You can use `/etc/minio/manta_key`.
+- `MANTA_ROOT` is an optional value that will mount Minio at a specific Manta sub-directory.
 
 These values can be placed inside `examples/compose/_env` and `examples/triton/_env` to be used by both examples setups.
 
