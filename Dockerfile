@@ -31,8 +31,8 @@ RUN export CONTAINERPILOT_CHECKSUM=1248784ff475e6fda69ebf7a2136adbfb902f74b \
 
 # Add test bin of the Minio Manta Gateway
 ENV MINIO_DIST=https://us-east.manta.joyent.com/justin.reagor/public/minio/minio/releases
-ENV MINIO_COMMIT=af39390
-RUN export MINIO_CHECKSUM=130e3566e182fb8015806d89f9552f608f6fc725ae80eff6c3e44733633dafb0 \
+ENV MINIO_COMMIT=801d91c
+RUN export MINIO_CHECKSUM=505c80b3dc88db8c44319a80e71384b2836c854f0e259f28f62e5437b4ebf0d7 \
     && curl -Lso /tmp/minio.tar.gz \
          "${MINIO_DIST}/minio-manta-${MINIO_COMMIT}-linux.tar.gz" \
     && tar zxf /tmp/minio.tar.gz -C /usr/bin \
